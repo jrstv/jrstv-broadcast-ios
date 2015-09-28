@@ -172,6 +172,7 @@
 {
     _cameraState = cameraState;
     _session.cameraState = (VCCameraState)_cameraState;
+    _broadcasterView.cameraMirrored = (cameraState == CineCameraStateFront);
 }
 
 - (CineStreamState)streamState

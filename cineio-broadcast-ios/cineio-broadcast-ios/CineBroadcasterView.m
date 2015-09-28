@@ -12,9 +12,11 @@
 @implementation CineBroadcasterView
 {
     BOOL _orientationLocked;
+    BOOL _cameraMirrored;
 }
 
 @synthesize orientationLocked = _orientationLocked;
+@synthesize cameraMirrored = _cameraMirrored;
 @synthesize cameraView;
 @synthesize statusView;
 @synthesize status;
@@ -27,13 +29,16 @@ const NSInteger ControlsViewHeight = 86;
 - (void)awakeFromNib
 {
     self.orientationLocked = NO;
+    self.cameraMirrored = NO;
     [self setupUI];
 }
 
 - (id)initWithFrame:(CGRect)aRect
 {
     self = [super initWithFrame:aRect];
+
     self.orientationLocked = NO;
+    self.cameraMirrored = NO;
     [self setupUI];
 
     return self;
@@ -41,10 +46,23 @@ const NSInteger ControlsViewHeight = 86;
 
 - (void)layoutSubviews
 {
-    [cameraView setFrame:[self cameraFrameForOrientation:[[UIDevice currentDevice] orientation]]];
-    [statusView setFrame:[self statusFrameForOrientation:[[UIDevice currentDevice] orientation]]];
-    [status setFrame:CGRectMake(10, 10, statusView.bounds.size.width-20, 20)];
-    [controlsView setFrame:CGRectMake(0, self.bounds.size.height-ControlsViewHeight, self.bounds.size.width, ControlsViewHeight)];
+//    [cameraView setFrame:[self cameraFrameForOrientation:[[UIDevice currentDevice] orientation]]];
+//    [statusView setFrame:[self statusFrameForOrientation:[[UIDevice currentDevice] orientation]]];
+//    [status setFrame:CGRectMake(10, 10, statusView.bounds.size.width-20, 20)];
+//    [controlsView setFrame:CGRectMake(0, self.bounds.size.height-ControlsViewHeight, self.bounds.size.width, ControlsViewHeight)];
+
+    double rotation = [self rotationForOrientation:UIDeviceOrientationLandscapeLeft];
+    CGAffineTransform transform = CGAffineTransformMakeRotation(rotation);
+    CGRect statusFrame = [self statusFrameForOrientation:UIDeviceOrientationLandscapeLeft];
+    CGRect cameraFrame = [self cameraFrameForOrientation:UIDeviceOrientationLandscapeLeft];
+
+    cameraView.transform = statusView.transform = transform;
+    cameraView.frame = cameraFrame;
+    statusView.frame = statusFrame;
+    
+    if (_cameraMirrored) {
+        cameraView.transform = CGAffineTransformScale(transform, -1, 1);
+    }
 }
 
 - (BOOL)orientationLocked
@@ -59,6 +77,20 @@ const NSInteger ControlsViewHeight = 86;
     if (controlsView) {
         controlsView.orientationLocked = orientationLocked;
     }
+}
+
+- (BOOL)cameraMirrored
+{
+    return _cameraMirrored;
+}
+
+- (void)setCameraMirrored:(BOOL)cameraMirrored
+{
+    if (_cameraMirrored == cameraMirrored) return;
+    _cameraMirrored = cameraMirrored;
+
+    if (!cameraView) return;
+    cameraView.transform = CGAffineTransformScale(cameraView.transform, -1, 1);
 }
 
 
@@ -87,7 +119,7 @@ const NSInteger ControlsViewHeight = 86;
     
     controlsView = [[CineBroadcasterControlsView alloc] initWithFrame:CGRectMake(0, self.bounds.size.height-ControlsViewHeight, self.bounds.size.width, ControlsViewHeight)];
     controlsView.backgroundColor = translucentBlack;
-    
+
     [self addSubview:cameraView];
     [self addSubview:statusView];
     [self addSubview:controlsView];
@@ -105,6 +137,7 @@ const NSInteger ControlsViewHeight = 86;
     switch (orientation) {
         case UIDeviceOrientationPortrait:
         case UIDeviceOrientationPortraitUpsideDown:
+            return;
         case UIDeviceOrientationLandscapeLeft:
         case UIDeviceOrientationLandscapeRight:
             rotation = [self rotationForOrientation:orientation];
@@ -119,15 +152,24 @@ const NSInteger ControlsViewHeight = 86;
     }
     
     CGAffineTransform transform = CGAffineTransformMakeRotation(rotation);
+    
     [UIView animateWithDuration:0.4
                           delay:0.0
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
-                         cameraView.transform = statusView.transform = transform;
-                         cameraView.frame = cameraFrame;
+                         if (!_cameraMirrored) {
+                             cameraView.transform = transform;
+                             cameraView.frame = cameraFrame;
+                         }
+                         statusView.transform = transform;
                          statusView.frame = statusFrame;
                      }
-                     completion:nil];
+                     completion:^(BOOL finished) {
+                         if (finished && _cameraMirrored) {
+                             cameraView.transform = CGAffineTransformScale(transform, -1, 1);
+                             cameraView.frame = cameraFrame;
+                         }
+                     }];
 }
 
 - (double)rotationForOrientation:(UIDeviceOrientation)orientation

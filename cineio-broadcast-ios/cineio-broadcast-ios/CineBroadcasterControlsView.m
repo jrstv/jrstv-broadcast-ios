@@ -22,10 +22,12 @@
 
     // set up UI
     orientationLocked = NO;
+
+    // record button
     recordButton = [[CineRecordButtonView alloc] initWithFrame:CGRectMake(self.center.x-36, self.center.y-36, 72, 72)];
     recordButton.enabled = NO;
     [self addSubview:recordButton];
-    
+
     // torch button
     NSString *lightningIconString = @"data:image/png;base64,";
     lightningIconString = [lightningIconString stringByAppendingString:CineLightningIcon];
@@ -46,6 +48,11 @@
     cameraStateButton.frame = CGRectMake(0, 0, 25, 25);
     [self addSubview:cameraStateButton];
 
+    // default orient
+    double rotation = [self rotationForOrientation:UIDeviceOrientationLandscapeLeft];
+    CGAffineTransform transform = CGAffineTransformMakeRotation(rotation);
+    torchButton.transform = cameraStateButton.transform = transform;
+    
     return self;
 }
 
@@ -100,24 +107,11 @@
     
     switch (orientation) {
         case UIDeviceOrientationPortrait:
-        {
-            rotation = 0;
-        }
-            break;
         case UIDeviceOrientationPortraitUpsideDown:
-        {
-            rotation = M_PI;
-        }
-            break;
+            return;
         case UIDeviceOrientationLandscapeLeft:
-        {
-            rotation = M_PI_2;
-        }
-            break;
         case UIDeviceOrientationLandscapeRight:
-        {
-            rotation = -M_PI_2;
-        }
+            rotation = [self rotationForOrientation:orientation];
             break;
         case UIDeviceOrientationFaceDown:
         case UIDeviceOrientationFaceUp:
@@ -135,6 +129,27 @@
                      }
                      completion:nil];
     
+}
+
+- (double)rotationForOrientation:(UIDeviceOrientation)orientation
+{
+    if (self.orientationLocked) return 0;
+    
+    switch (orientation) {
+        case UIDeviceOrientationPortrait:
+            return 0;
+        case UIDeviceOrientationPortraitUpsideDown:
+            return M_PI;
+        case UIDeviceOrientationLandscapeLeft:
+            return M_PI_2;
+        case UIDeviceOrientationLandscapeRight:
+            return -M_PI_2;
+        case UIDeviceOrientationFaceDown:
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationUnknown:
+        default:
+            return 0;
+    }
 }
 
 @end

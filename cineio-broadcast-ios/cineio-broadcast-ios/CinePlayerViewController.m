@@ -85,7 +85,7 @@
     moviePlayer.controlStyle = MPMovieControlStyleDefault;
     moviePlayer.shouldAutoplay = YES;
     [self.view addSubview:moviePlayer.view];
-    [moviePlayer setScalingMode:MPMovieScalingModeAspectFill];
+    [moviePlayer setScalingMode:MPMovieScalingModeAspectFit];
     [moviePlayer setFullscreen:YES animated:YES];
 }
 
@@ -135,6 +135,7 @@
     if ([player respondsToSelector:@selector(setFullscreen:animated:)]) {
         [player.view removeFromSuperview];
     }
+    [spinner stopAnimating];
     [self finishStreaming];
 }
 
