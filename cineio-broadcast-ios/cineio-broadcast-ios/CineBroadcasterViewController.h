@@ -10,6 +10,7 @@
 #import "CineBroadcasterProtocol.h"
 #import "CineBroadcasterView.h"
 
+#import "HPVideoBarrageViewController.h"
 
 @interface CineBroadcasterViewController : UIViewController <CineBroadcasterProtocol>
 {
@@ -19,5 +20,12 @@
 - (void)toggleStreaming:(id)sender;
 - (void)updateStatus:(NSString *)message;
 - (void)enableControls;
+
+@property (nonatomic, strong) HPVideoBarrageViewController *barrageViewController;
+
+@property (nonatomic, strong) NSString* roomId;
+@property (nonatomic, strong) NSString* password;
+
+@property (nonatomic, strong) UIButton *popTextButton;
 
 @end

@@ -1,11 +1,11 @@
 PODS:
   - AFNetworking (2.5.4):
-    - AFNetworking/NSURLConnection
-    - AFNetworking/NSURLSession
-    - AFNetworking/Reachability
-    - AFNetworking/Security
-    - AFNetworking/Serialization
-    - AFNetworking/UIKit
+    - AFNetworking/NSURLConnection (= 2.5.4)
+    - AFNetworking/NSURLSession (= 2.5.4)
+    - AFNetworking/Reachability (= 2.5.4)
+    - AFNetworking/Security (= 2.5.4)
+    - AFNetworking/Serialization (= 2.5.4)
+    - AFNetworking/UIKit (= 2.5.4)
   - AFNetworking/NSURLConnection (2.5.4):
     - AFNetworking/Reachability
     - AFNetworking/Security
@@ -20,14 +20,27 @@ PODS:
   - AFNetworking/UIKit (2.5.4):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - ASIHTTPRequest (1.8.2):
+    - ASIHTTPRequest/ASIWebPageRequest (= 1.8.2)
+    - ASIHTTPRequest/CloudFiles (= 1.8.2)
+    - ASIHTTPRequest/Core (= 1.8.2)
+    - ASIHTTPRequest/S3 (= 1.8.2)
+  - ASIHTTPRequest/ASIWebPageRequest (1.8.2):
+    - ASIHTTPRequest/Core
+  - ASIHTTPRequest/CloudFiles (1.8.2):
+    - ASIHTTPRequest/Core
+  - ASIHTTPRequest/Core (1.8.2):
+    - Reachability
+  - ASIHTTPRequest/S3 (1.8.2):
+    - ASIHTTPRequest/Core
   - boost (1.51.0):
-    - boost/graph-includes
-    - boost/math-includes
-    - boost/numeric-includes
-    - boost/pointer_cast-includes
-    - boost/preprocessor-includes
-    - boost/shared_ptr-includes
-    - boost/string_algorithms-includes
+    - boost/graph-includes (= 1.51.0)
+    - boost/math-includes (= 1.51.0)
+    - boost/numeric-includes (= 1.51.0)
+    - boost/pointer_cast-includes (= 1.51.0)
+    - boost/preprocessor-includes (= 1.51.0)
+    - boost/shared_ptr-includes (= 1.51.0)
+    - boost/string_algorithms-includes (= 1.51.0)
   - boost/graph-includes (1.51.0)
   - boost/math-includes (1.51.0)
   - boost/numeric-includes (1.51.0)
@@ -37,8 +50,12 @@ PODS:
   - boost/string_algorithms-includes (1.51.0)
   - glm (0.9.4.6)
   - OHHTTPStubs (4.0.2)
+  - Reachability (3.2)
+  - socket.IO (0.5.2):
+    - SocketRocket (~> 0.2)
+  - SocketRocket (0.3.1-beta2)
   - UriParser-cpp (0.1.3)
-  - VideoCore (0.3.1):
+  - VideoCore (0.3.2):
     - boost (~> 1.51.0)
     - glm (~> 0.9.4.6)
     - UriParser-cpp (~> 0.1.3)
@@ -46,21 +63,35 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking (~> 2.5)
+  - ASIHTTPRequest (~> 1.8.2)
   - OHHTTPStubs (~> 4.0)
-  - VideoCore (~> 0.3)
+  - socket.IO (~> 0.5.2)
+  - SocketRocket (~> 0.3.1-beta2)
+  - VideoCore (from `/Users/WilliamShi/Desktop/HoopMediaStreamer/jrstv/VideoCore`)
   - XCTAsyncTestCase (from `https://github.com/iheartradio/xctest-additions.git`)
 
 EXTERNAL SOURCES:
+  VideoCore:
+    :path: /Users/WilliamShi/Desktop/HoopMediaStreamer/jrstv/VideoCore
   XCTAsyncTestCase:
+    :git: https://github.com/iheartradio/xctest-additions.git
+
+CHECKOUT OPTIONS:
+  XCTAsyncTestCase:
+    :commit: 2ed4b07c8a8ba6866641bb411e6cfd5221786501
     :git: https://github.com/iheartradio/xctest-additions.git
 
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
+  ASIHTTPRequest: ec013992946676b7978dcbde6396d57312d21db4
   boost: 6c5c8d8daef26ac83c1e1c00ad14de62b80161d7
   glm: e22c8d9df10404059b19c2952f9fa44d9a9f3056
   OHHTTPStubs: dbd1957d414659783e07b49c961940b7564c23d9
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  socket.IO: eaaaea33481d8a81d8f78e331f0c72ba44758036
+  SocketRocket: 7284ab9370a06c99aba92b2fe3a32aedd0f9a6fa
   UriParser-cpp: cbbe00080ee432ec4833dca863a7fc83adc9b01a
-  VideoCore: e375f2e5b41067a8c74cf6dc6f0c79a958c88613
-  XCTAsyncTestCase: 33261474dd19caad96f4df400c1cbbe95f153917
+  VideoCore: ee91bb8b71919ac7a1cbc752b72272fc53a0567f
+  XCTAsyncTestCase: 1aed7ec7905cc37287be0869afec48b6dd9c51ad
 
-COCOAPODS: 0.34.4
+COCOAPODS: 0.38.2

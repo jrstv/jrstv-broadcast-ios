@@ -20,6 +20,7 @@
 @property (nonatomic, copy, readonly) NSDate *expiration;
 @property (nonatomic, copy, readonly) NSDate *assignedAt;
 @property (nonatomic, readonly) BOOL record;
+@property (nonatomic, copy, readonly) NSDictionary* danmu;
 
 - (id)initWithAttributes:(NSDictionary *)streamAttributes;
 
