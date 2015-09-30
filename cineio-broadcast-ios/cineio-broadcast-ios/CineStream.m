@@ -20,6 +20,7 @@
 @synthesize expiration;
 @synthesize assignedAt;
 @synthesize record;
+@synthesize danmu;
 
 - (id)initWithAttributes:(NSDictionary *)streamAttributes
 {
@@ -34,6 +35,8 @@
         expiration = [streamAttributes[@"expiration"] copy];
         assignedAt = [streamAttributes[@"assignedAt"] copy];
         record = ((NSNumber *)[streamAttributes[@"record"] copy]).boolValue;
+        
+        danmu = [streamAttributes[@"danmu"] copy];
     }
     
     return self;

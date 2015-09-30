@@ -11,4 +11,8 @@ pod 'OHHTTPStubs',        '~> 4.0'
 #pod 'VideoCore',          '~> 0.3'
 
 # Uncomment this line if working on VideoCore (also remove VideoCore version from cineio-ios.podspec)
-pod 'VideoCore',          path: '/Users/soplwang/Projects/JRs.tv/VideoCore'
+pod 'VideoCore',          path: '/Users/WilliamShi/Desktop/HoopMediaStreamer/jrstv/VideoCore'
+
+pod 'SocketRocket', '~> 0.3.1-beta2'
+pod 'socket.IO', '~> 0.5.2'
+pod 'ASIHTTPRequest', '~> 1.8.2'
