@@ -94,17 +94,20 @@
     _session.previewView.frame = _broadcasterView.bounds;
     _session.delegate = self;
     
+    
+    // Danmaku support
     double rotation = [self rotationForOrientation:UIDeviceOrientationLandscapeLeft];
     CGAffineTransform transform = CGAffineTransformMakeRotation(rotation);
-    self.barrageViewController.view.transform = CGAffineTransformRotate(transform,0);
-    
-    [self.view addSubview:self.barrageViewController.view];
-    self.barrageViewController.view.hidden = NO;
+
     self.barrageViewController.isEnableBarragel = YES;
-    
+    self.barrageViewController.view.hidden = NO;
+    self.barrageViewController.view.transform = transform;
+    [self.view addSubview:self.barrageViewController.view];
+
     _isPopTextEnable = YES;
     popTextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    popTextButton.frame = CGRectMake(10, 40, 30, 40);
+    popTextButton.frame = CGRectMake(12, 25, 40, 40);
+    popTextButton.transform = transform;
     
     if (!_isPopTextEnable) {
         [popTextButton setImage:[UIImage imageNamed:@"barrage_close_btn"]  forState:UIControlStateNormal];
@@ -115,9 +118,8 @@
     }
     
     [popTextButton addTarget:self action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
-    
+
     [self.view addSubview:popTextButton];
-    
     
     //test param
 //    _enName = @"NBA";
@@ -158,15 +160,10 @@
 {
     _isPopTextEnable = !_isPopTextEnable;
     if (!_isPopTextEnable) {
-        
         [popTextButton setImage:[UIImage imageNamed:@"barrage_close_btn"]  forState:UIControlStateNormal];
-        
         [popTextButton setImage:[UIImage imageNamed:@"barrage_close_btn_1"]  forState:UIControlStateHighlighted];
-    }
-    else {
-        
+    } else {
         [popTextButton setImage:[UIImage imageNamed:@"barrage_btn"]  forState:UIControlStateNormal];
-        
         [popTextButton setImage:[UIImage imageNamed:@"barrage_btn_1"]  forState:UIControlStateHighlighted];
     }
     [self enableTextBarrages:_isPopTextEnable];
@@ -176,9 +173,11 @@
 {
     [super viewWillAppear:animated];
     
-    
+    [self registerApplicationObservers];
     
     if (!self.orientationLocked) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:NSSelectorFromString(@"orientationChanged") name:UIDeviceOrientationDidChangeNotification object:nil];
+
         if ([self.view isKindOfClass:[CineBroadcasterView class]]) {
             CineBroadcasterView *cbView = (CineBroadcasterView *)self.view;
             if ([cbView respondsToSelector:NSSelectorFromString(@"orientationChanged")]) {
@@ -201,6 +200,41 @@
         [request startAsynchronous];
     }
 }
+
+- (void)orientationChanged
+{
+    if (self.orientationLocked) return;
+    
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    double rotation = 0;
+    
+    switch (orientation) {
+        case UIDeviceOrientationPortrait:
+        case UIDeviceOrientationPortraitUpsideDown:
+            return;
+        case UIDeviceOrientationLandscapeLeft:
+        case UIDeviceOrientationLandscapeRight:
+            rotation = [self rotationForOrientation:orientation];
+            break;
+        case UIDeviceOrientationFaceDown:
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationUnknown:
+        default:
+            return;
+    }
+    
+    CGAffineTransform transform = CGAffineTransformMakeRotation(rotation);
+    
+    [UIView animateWithDuration:0.4
+                          delay:0.0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.barrageViewController.view.transform = transform;
+                         self.popTextButton.transform = transform;
+                     }
+                     completion:nil];
+}
+
 
 - ( void )requestFinished:( ASIHTTPRequest *)request
 {
@@ -279,11 +313,13 @@
     
     if ([self.view isKindOfClass:[CineBroadcasterView class]]) {
         CineBroadcasterView *cbView = (CineBroadcasterView *)self.view;
-        [[NSNotificationCenter defaultCenter] removeObserver:cbView];
-        [[NSNotificationCenter defaultCenter] removeObserver:cbView.controlsView];
+        [[NSNotificationCenter defaultCenter] removeObserver:cbView name:UIDeviceOrientationDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:cbView.controlsView name:UIDeviceOrientationDidChangeNotification object:nil];
     }
     
-    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    [self unregisterApplicationObservers];
+
     [self.barrageViewController cleanMsgs]; //退到后台，清除当前缓存的弹幕数据
     
     [[GlobalWebSocketManager sharedInstance]setDelegate:nil type:DelegateType_chat_casino];
@@ -486,16 +522,6 @@
     }
 }
 
-@end
-
-#pragma mark - WeakTimerTarget
-
-@implementation WeakTimerTarget
-
-- (void) timerFire:(NSTimer *)timer {
-    [self.target performSelector:@selector(autoReconnect:) withObject:timer.userInfo];
-}
-
 #pragma mark - join
 
 - (void)joinRoom
@@ -581,7 +607,7 @@
             
         }
         
-        if (![_result objectForKey:@"data"] || ![[_result objectForKey:@"data"]isKindOfClass:[NSArray class]]) {
+        if (![_result objectForKey:@"data"] || ![[_result objectForKey:@"data"] isKindOfClass:[NSArray class]]) {
             _data = [NSArray arrayWithObjects:nil];
         }else {
             _data = [_result objectForKey:@"data"];
@@ -807,6 +833,16 @@
 - (void)applicationWillTerminate
 {
 
+}
+
+@end
+
+#pragma mark - WeakTimerTarget
+
+@implementation WeakTimerTarget
+
+- (void) timerFire:(NSTimer *)timer {
+    [self.target performSelector:@selector(autoReconnect:) withObject:timer.userInfo];
 }
 
 @end
