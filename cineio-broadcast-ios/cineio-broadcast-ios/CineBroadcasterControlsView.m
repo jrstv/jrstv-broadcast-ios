@@ -35,7 +35,7 @@
     UIImage *lightningIcon = [UIImage imageWithData:lightningIconData];
     torchButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [torchButton setBackgroundImage:lightningIcon forState:UIControlStateNormal];
-    torchButton.frame = CGRectMake(0, 0, 25, 25);
+    torchButton.frame = CGRectMake(0, 0, 64, 64);
     [self addSubview:torchButton];
     
     // switch camera button
@@ -45,7 +45,7 @@
     UIImage *switchCameraIcon = [UIImage imageWithData:switchCameraIconData];
     cameraStateButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [cameraStateButton setBackgroundImage:switchCameraIcon forState:UIControlStateNormal];
-    cameraStateButton.frame = CGRectMake(0, 0, 25, 25);
+    cameraStateButton.frame = CGRectMake(0, 0, 64, 64);
     [self addSubview:cameraStateButton];
 
     // default orient

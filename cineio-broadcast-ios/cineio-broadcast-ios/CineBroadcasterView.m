@@ -103,20 +103,20 @@ const NSInteger ControlsViewHeight = 86;
     [cameraView setContentMode:UIViewContentModeCenter];
     [cameraView setContentMode:UIViewContentModeScaleAspectFit];
     
-    UIColor *translucentBlack = [[UIColor alloc] initWithWhite:0.0 alpha:0.25];
-    
     statusView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, StatusViewHeight)];
-    statusView.backgroundColor = translucentBlack;
-    status = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, statusView.bounds.size.width-20, 20)];
+    statusView.backgroundColor = [UIColor clearColor];
+    status = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, statusView.bounds.size.width-20, 20)];
     status.backgroundColor = [UIColor clearColor];
     status.textColor = [UIColor whiteColor];
     status.font = [UIFont systemFontOfSize:12];
     status.textAlignment = NSTextAlignmentLeft;
     status.numberOfLines = 1;
     status.clipsToBounds = YES;
-    status.text = @"Initializing";
+    status.text = @"Initializing...";
     [statusView addSubview:status];
-    
+
+    UIColor *translucentBlack = [[UIColor alloc] initWithWhite:0.0 alpha:0.25];
+
     controlsView = [[CineBroadcasterControlsView alloc] initWithFrame:CGRectMake(0, self.bounds.size.height-ControlsViewHeight, self.bounds.size.width, ControlsViewHeight)];
     controlsView.backgroundColor = translucentBlack;
 
@@ -217,7 +217,7 @@ const NSInteger ControlsViewHeight = 86;
                 statusFrame = CGRectMake(0, 0, self.bounds.size.width, StatusViewHeight);
                 break;
             case UIDeviceOrientationLandscapeLeft:
-                statusFrame = CGRectMake(self.bounds.size.width-StatusViewHeight, 0, StatusViewHeight, self.bounds.size.height-ControlsViewHeight);
+                statusFrame = CGRectMake(self.bounds.size.width-StatusViewHeight, 15, StatusViewHeight, self.bounds.size.height-ControlsViewHeight-15);
                 break;
             case UIDeviceOrientationLandscapeRight:
                 statusFrame = CGRectMake(0, 0, StatusViewHeight, self.bounds.size.height-ControlsViewHeight);
