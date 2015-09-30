@@ -29,10 +29,6 @@
     BOOL _torchOn;
     CineCameraState _cameraState;
     
-    //add by William Shi
-    NSTimer *timer;
-    bool isReconnectStatus;
-    
     //for Barrage
     NSString *_enName;
     NSString *_gid;
@@ -98,9 +94,6 @@
     _session.previewView.frame = _broadcasterView.bounds;
     _session.delegate = self;
     
-    timer = nil;
-    isReconnectStatus = false;
-    
     double rotation = [self rotationForOrientation:UIDeviceOrientationLandscapeLeft];
     CGAffineTransform transform = CGAffineTransformMakeRotation(rotation);
     self.barrageViewController.view.transform = CGAffineTransformRotate(transform,0);
@@ -115,13 +108,9 @@
     
     if (!_isPopTextEnable) {
         [popTextButton setImage:[UIImage imageNamed:@"barrage_close_btn"]  forState:UIControlStateNormal];
-        
         [popTextButton setImage:[UIImage imageNamed:@"barrage_close_btn_1"]  forState:UIControlStateHighlighted];
-    }
-    else {
-        
+    } else {
         [popTextButton setImage:[UIImage imageNamed:@"barrage_btn"]  forState:UIControlStateNormal];
-        
         [popTextButton setImage:[UIImage imageNamed:@"barrage_btn_1"]  forState:UIControlStateHighlighted];
     }
     
@@ -300,13 +289,6 @@
     [[GlobalWebSocketManager sharedInstance]setDelegate:nil type:DelegateType_chat_casino];
     [[GlobalWebSocketManager sharedInstance] leaveRoom];
     
-    
-    if (isReconnectStatus) {
-        isReconnectStatus = false;
-        //end reconnect
-        [self performSelectorOnMainThread:@selector(endReConnectTimer:) withObject:nil waitUntilDone:NO];
-    }
-
 }
 
 - (void)didReceiveMemoryWarning
