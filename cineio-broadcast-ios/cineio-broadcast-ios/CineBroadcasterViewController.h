@@ -21,3 +21,15 @@
 - (void)enableControls;
 
 @end
+
+
+/*
+ Fix NSTimer strong reference problem
+ */
+@interface WeakTimerTarget : NSObject
+
+@property (nonatomic, weak) id target;
+
+- (void) timerFire:(NSTimer *)timer;
+
+@end

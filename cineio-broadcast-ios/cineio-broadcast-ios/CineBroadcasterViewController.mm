@@ -9,6 +9,8 @@
 #import "CineBroadcasterViewController.h"
 #import <AVFoundation/AVFoundation.h>
 
+#pragma mark - CineBroadcasterViewController
+
 @interface CineBroadcasterViewController () <VCSessionDelegate>
 {
     CineBroadcasterView *_broadcasterView;
@@ -22,6 +24,8 @@
 }
 
 @property (nonatomic, strong) VCSimpleSession* session;
+@property (nonatomic, strong) WeakTimerTarget *weakTarget;
+@property (atomic, strong) NSTimer *reconnectTimer;
 
 @end
 
@@ -47,6 +51,9 @@
 
     _session = [[VCSimpleSession alloc] initWithVideoSize:self.videoSize frameRate:self.framesPerSecond bitrate:self.videoBitRate useInterfaceOrientation:NO];
     //_session.useAdaptiveBitrate = YES; // this seems to crash VideoCore
+    
+    _weakTarget = [[WeakTimerTarget alloc] init];
+    _weakTarget.target = self;
 
     _broadcasterView = (CineBroadcasterView *)self.view;
     _broadcasterView.orientationLocked = _session.orientationLocked = self.orientationLocked;
@@ -177,7 +184,10 @@
 
 - (CineStreamState)streamState
 {
-    return (CineStreamState)_session.rtmpSessionState;
+    if (self.reconnectTimer)
+        return CineStreamStateStarting;
+    else
+        return (CineStreamState)_session.rtmpSessionState;
 }
 
 - (void)toggleTorch:(id)sender {
@@ -200,6 +210,14 @@
 {
     NSLog(@"record / stop button touched");
 
+    if (self.reconnectTimer) {
+        _broadcasterView.controlsView.recordButton.recording = NO;
+        [self updateStatus:@"Disconnected"];
+        [self.reconnectTimer invalidate];
+        self.reconnectTimer = nil;
+        return;
+    }
+
     switch(_session.rtmpSessionState) {
         case VCSessionStateNone:
         case VCSessionStatePreviewStarted:
@@ -208,7 +226,7 @@
             [_session startRtmpSessionWithURL:self.publishUrl andStreamKey:self.publishStreamName];
             break;
         default:
-            [self updateStatus:@"Stopping ..."];
+            [self updateStatus:@"Stopping..."];
             [_session endRtmpSession];
             break;
     }
@@ -231,22 +249,55 @@
     switch(state) {
         case VCSessionStateStarting:
             _broadcasterView.controlsView.recordButton.recording = YES;
-            [self updateStatus:@"Connecting to server ..."];
+            [self updateStatus:@"Connecting to server..."];
             break;
         case VCSessionStateStarted:
-            [self updateStatus:@"Streaming"];
+            [self updateStatus:@"Streaming..."];
             break;
         case VCSessionStateEnded:
-            _broadcasterView.controlsView.recordButton.recording = NO;
-            [self updateStatus:@"Disconnected"];
+            if (!self.reconnectTimer) {
+                _broadcasterView.controlsView.recordButton.recording = NO;
+                [self updateStatus:@"Disconnected"];
+            }
             break;
         case VCSessionStateError:
-            _broadcasterView.controlsView.recordButton.recording = NO;
-            [self updateStatus:@"Couldn't connect to server"];
+            if (!self.reconnectTimer) {
+                [self updateStatus:@"Error, auto reconnecting..."];
+                self.reconnectTimer = [NSTimer scheduledTimerWithTimeInterval:3.0f
+                                                                       target:_weakTarget
+                                                                     selector:@selector(timerFire:)
+                                                                     userInfo:nil
+                                                                      repeats:NO];
+            }
             break;
         default:
             break;
     }
+}
+
+- (void) autoReconnect:(id)sender {
+    self.reconnectTimer = nil;
+
+    switch(_session.rtmpSessionState) {
+        case VCSessionStateNone:
+        case VCSessionStatePreviewStarted:
+        case VCSessionStateEnded:
+        case VCSessionStateError:
+            [_session startRtmpSessionWithURL:self.publishUrl andStreamKey:self.publishStreamName];
+            break;
+        default:
+            break;
+    }
+}
+
+@end
+
+#pragma mark - WeakTimerTarget
+
+@implementation WeakTimerTarget
+
+- (void) timerFire:(NSTimer *)timer {
+    [self.target performSelector:@selector(autoReconnect:) withObject:timer.userInfo];
 }
 
 @end
