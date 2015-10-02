@@ -507,6 +507,14 @@
     }
 }
 
+- (void) detectedThroughput:(NSInteger) throughputInBytesPerSecond videoRate:(NSInteger) rate {
+    if (_session.rtmpSessionState != VCSessionStateStarted) return;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateStatus:[NSString stringWithFormat:@"Streaming..., rate: %dKB", throughputInBytesPerSecond/1000]];
+    });
+}
+
 - (void) autoReconnect:(id)sender {
     self.reconnectTimer = nil;
 
