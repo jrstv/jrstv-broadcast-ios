@@ -531,7 +531,8 @@
 }
 
 - (void)loadMore {
-    [[GlobalWebSocketManager sharedInstance] joinRoomChatWithType:_enName gid:_gid
+//    [[GlobalWebSocketManager sharedInstance] joinRoomChatWithType:_enName gid:_gid
+    [[GlobalWebSocketManager sharedInstance] joinRoomChatWithType:_en gid:_gid
                                                               pid:[NSString stringWithFormat:@"%ld", (long)_nextPageStartPid]
                                                             direc:@"prev"
                                                        withRoomId:_roomId];
@@ -663,7 +664,8 @@
 
 -(void)rejoinIfLostConnect
 {
-    [[GlobalWebSocketManager sharedInstance] joinRoomChatWithType:_enName gid:_gid pid:_lastPid direc:@"next" withRoomId:_roomId];
+//    [[GlobalWebSocketManager sharedInstance] joinRoomChatWithType:_enName gid:_gid pid:_lastPid direc:@"next" withRoomId:_roomId];
+    [[GlobalWebSocketManager sharedInstance] joinRoomChatWithType:_en gid:_gid pid:_lastPid direc:@"next" withRoomId:_roomId];
 }
 
 /**

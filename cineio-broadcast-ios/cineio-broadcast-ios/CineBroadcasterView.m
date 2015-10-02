@@ -46,11 +46,6 @@ const NSInteger ControlsViewHeight = 86;
 
 - (void)layoutSubviews
 {
-//    [cameraView setFrame:[self cameraFrameForOrientation:[[UIDevice currentDevice] orientation]]];
-//    [statusView setFrame:[self statusFrameForOrientation:[[UIDevice currentDevice] orientation]]];
-//    [status setFrame:CGRectMake(10, 10, statusView.bounds.size.width-20, 20)];
-//    [controlsView setFrame:CGRectMake(0, self.bounds.size.height-ControlsViewHeight, self.bounds.size.width, ControlsViewHeight)];
-
     double rotation = [self rotationForOrientation:UIDeviceOrientationLandscapeLeft];
     CGAffineTransform transform = CGAffineTransformMakeRotation(rotation);
     CGRect statusFrame = [self statusFrameForOrientation:UIDeviceOrientationLandscapeLeft];
@@ -59,7 +54,7 @@ const NSInteger ControlsViewHeight = 86;
     cameraView.transform = statusView.transform = transform;
     cameraView.frame = cameraFrame;
     statusView.frame = statusFrame;
-    
+
     if (_cameraMirrored) {
         cameraView.transform = CGAffineTransformScale(transform, -1, 1);
     }
@@ -105,7 +100,7 @@ const NSInteger ControlsViewHeight = 86;
     
     statusView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, StatusViewHeight)];
     statusView.backgroundColor = [UIColor clearColor];
-    status = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, statusView.bounds.size.width-20, 20)];
+    status = [[UILabel alloc] initWithFrame:CGRectMake(10, 2, statusView.bounds.size.width-20, 20)];
     status.backgroundColor = [UIColor clearColor];
     status.textColor = [UIColor whiteColor];
     status.font = [UIFont systemFontOfSize:12];
