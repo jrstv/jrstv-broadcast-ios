@@ -86,22 +86,27 @@
 #pragma mark - Public Method
 
 - (void)addMsg:(NSDictionary *)msgDic isFirstIndex:(BOOL)isFirst isSelfSend:(BOOL)isSelfSend {
+    NSString *content = [msgDic stringValueForKey:@"content"];
     NSString *color = @"ffffff";
-    if ([msgDic objectForKey:@"gift"] && [[msgDic objectForKey:@"gift"]isKindOfClass:[NSDictionary class]]) {
-        if ([[[msgDic objectForKey:@"gift"]stringValueForKey:@"link_color"]length]) {
+
+    if ([msgDic objectForKey:@"gift"] && [[msgDic objectForKey:@"gift"] isKindOfClass:[NSDictionary class]]) {
+        if ([[[msgDic objectForKey:@"gift"] stringValueForKey:@"link_color"] length])
             color = [[msgDic objectForKey:@"gift"]stringValueForKey:@"link_color"];
-        }
+    } else if ([[msgDic stringValueForKey:@"username"] length]) {
+        content = [NSString stringWithFormat:@"@%@: %@", [msgDic stringValueForKey:@"username"], content];
     }
     if (isFirst) {
-        if ([[msgDic stringValueForKey:@"content"]length]) {
-            [self pushMsgForSelf:[msgDic stringValueForKey:@"content"] andColor:color isSelfSend:isSelfSend];
+        if ([[msgDic stringValueForKey:@"content"] length]) {
+            [self pushMsgForSelf:(isSelfSend ? [msgDic stringValueForKey:@"content"] : content)
+                        andColor:color
+                      isSelfSend:isSelfSend];
         }
     } else {
-//        if (self.messageQueue.count > BA_MAX_BARRAGE_COUNT) { //如果当前弹幕数量超出某个临界点，则丢弃该弹幕
-//            return;
-//        }
+        if (self.messageQueue.count > BA_MAX_BARRAGE_COUNT) { //如果当前弹幕数量超出某个临界点，则丢弃该弹幕
+            return;
+        }
         if ([[msgDic stringValueForKey:@"content"]length]){
-            [self pushMsg:[NSString stringWithFormat:@"%@",[msgDic stringValueForKey:@"content"]] color:color];
+            [self pushMsg:content color:color];
         }
     }
 }
