@@ -402,13 +402,14 @@
 
 - (CineCameraState)cameraState
 {
+    _cameraState = (ACBRCameraState)_session.cameraState;
     return _cameraState;
 }
 
 - (void)setCameraState:(CineCameraState)cameraState
 {
     _cameraState = cameraState;
-    _session.cameraState = (VCCameraState)_cameraState;
+    _session.cameraState = (VCCameraState)cameraState;
     _broadcasterView.cameraMirrored = (cameraState == CineCameraStateFront);
 }
 
