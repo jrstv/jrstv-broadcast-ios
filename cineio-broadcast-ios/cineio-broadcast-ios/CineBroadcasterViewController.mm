@@ -402,7 +402,7 @@
 
 - (CineCameraState)cameraState
 {
-    _cameraState = (ACBRCameraState)_session.cameraState;
+    _cameraState = (CineCameraState)_session.cameraState;
     return _cameraState;
 }
 
