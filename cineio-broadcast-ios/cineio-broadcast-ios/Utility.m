@@ -11,7 +11,7 @@
 @implementation Utility
 
 + (NSString*)version {
-    return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    return @"6.1.0"; //[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
 }
 
 @end

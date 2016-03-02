@@ -55,6 +55,8 @@ const NSInteger ControlsViewHeight = 86;
     cameraView.frame = cameraFrame;
     statusView.frame = statusFrame;
 
+    [controlsView setFrame:CGRectMake(0, self.bounds.size.height-ControlsViewHeight, self.bounds.size.width, ControlsViewHeight)];
+
     if (_cameraMirrored) {
         cameraView.transform = CGAffineTransformScale(transform, -1, 1);
     }

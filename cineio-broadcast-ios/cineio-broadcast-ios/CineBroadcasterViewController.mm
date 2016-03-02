@@ -99,10 +99,11 @@
     double rotation = [self rotationForOrientation:UIDeviceOrientationLandscapeLeft];
     CGAffineTransform transform = CGAffineTransformMakeRotation(rotation);
 
+    [_broadcasterView insertSubview:self.barrageViewController.view aboveSubview:_broadcasterView.cameraView];
     self.barrageViewController.isEnableBarragel = YES;
+    self.barrageViewController.view.frame = _broadcasterView.bounds;
     self.barrageViewController.view.hidden = NO;
     self.barrageViewController.view.transform = transform;
-    [self.view addSubview:self.barrageViewController.view];
 
     _isPopTextEnable = YES;
     popTextButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -118,8 +119,7 @@
     }
     
     [popTextButton addTarget:self action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
-
-    [self.view addSubview:popTextButton];
+    [_broadcasterView insertSubview:popTextButton aboveSubview:self.barrageViewController.view];
     
     //test param
 //    _enName = @"NBA";
@@ -304,7 +304,7 @@
 - ( void )requestFailed:( ASIHTTPRequest *)request
 {
     NSError *error = [request error];
-    NSLog ( @"requestFailed:%@" ,error. userInfo );
+    NSLog ( @"requestFailed:%@" ,error.userInfo );
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -439,7 +439,7 @@
 
 - (void)toggleStreaming:(id)sender
 {
-    NSLog(@"record / stop button touched");
+    NSLog(@"record/stop button touched");
 
     if (self.reconnectTimer) {
         _broadcasterView.controlsView.recordButton.recording = NO;
@@ -618,7 +618,7 @@
         }
         
         if (![_result objectForKey:@"data"] || ![[_result objectForKey:@"data"] isKindOfClass:[NSArray class]]) {
-            _data = [NSArray arrayWithObjects:nil];
+            _data = @[];
         }else {
             _data = [_result objectForKey:@"data"];
         }
@@ -692,6 +692,7 @@
         NSString *content = [PUtility getStringElementForKey:@"content" fromDict:contentItem];
         if ([content isKindOfClass:[NSString class]] && content.length > 0) {
             BOOL isRepeat = NO;
+#if 0
             if ([USER_DEFAULT objectForKey:kNickName] && _chatConentsArray.count < 20 && ![contentItem hasKey:@"gift"]) { //do not add repeat content
                 for (NSDictionary *chatContent in _chatConentsArray) {
                     if ([[chatContent objectForKey:@"content"] isEqualToString:[contentItem objectForKey:@"content"]] &&
@@ -701,10 +702,12 @@
                     }
                 }
             }
+#endif
             if (!isRepeat) {
+#if 0
                 [_chatConentsArray insertObject:contentItem atIndex:0];
-                
-                [self addBarrageData:contentItem atFirstIndex:YES isSelfSend:NO];
+#endif
+                [self addBarrageData:contentItem atFirstIndex:NO isSelfSend:NO];
                 
                 if (!isAddObjectInDataSource) {
                     isAddObjectInDataSource = YES;
@@ -724,8 +727,9 @@
     for (NSDictionary *contentItem in dataArray) {
         NSString *contentStr = [PUtility getStringElementForKey:@"content" fromDict:contentItem];
         if ([contentStr isKindOfClass:[NSString class]] && contentStr.length) {
+#if 0
             [_chatConentsArray addObject:contentItem];
-            
+#endif
             [self addBarrageData:contentItem atFirstIndex:NO isSelfSend:NO];
             
             if (!isAddObjectInDataSource) {
@@ -819,26 +823,28 @@
 
 - (void)applicationWillEnterForeground
 {
-    
+
 }
 
 - (void)applicationDidBecomeActive
 {
     [[GlobalWebSocketManager sharedInstance]setDelegate:self type:DelegateType_chat_casino];
+    if (isGotRoomInfo) {
+        [self joinRoom];
+        DLog(@"=========程序进入前台了啊, 已重连接弹幕，请注意============");
+    }
 }
 
 - (void)applicationWillResignActive
 {
-    
     [[GlobalWebSocketManager sharedInstance]setDelegate:nil type:DelegateType_chat_casino];
 }
 
 - (void)applicationDidEnterBackground
 {
-    
-    [[GlobalWebSocketManager sharedInstance]leaveRoom];
+    [[GlobalWebSocketManager sharedInstance] leaveRoom];
     [[GlobalWebSocketManager sharedInstance].socketIO disconnect];
-    DLog(@"=========程序进入后台了啊 请注意============");
+    DLog(@"=========程序进入后台了啊, 断开弹幕，请注意============");
 }
 
 - (void)applicationWillTerminate

@@ -11,8 +11,8 @@
 #import "Global.h"
 #import "PUtility.h"
 
-#define BA_LINENUM  5
-#define BA_OriginY  (43+20) //default sticky view height
+#define BA_LINENUM  7
+#define BA_OriginY  142 //default sticky view height
 #define BA_MAX_BARRAGE_COUNT 50
 
 @interface HPVideoBarrageViewController ()
@@ -126,6 +126,7 @@
 
 - (void)restartMessage {
     self.timer = [NSTimer scheduledTimerWithTimeInterval:[self getBA_INTERVAL] target:self selector:@selector(displayMessage) userInfo:nil repeats:YES];
+    [self.timer fire];
 }
 
 #pragma mark -
@@ -218,7 +219,9 @@
         CGFloat labelHeight = 20;
         CGSize size = [popMsg sizeWithAttributes:@{NSFontAttributeName:[PUtility systemFontSize:18]}];
         
+#if 0
         dispatch_async(dispatch_get_main_queue(), ^{
+#endif
             UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(screenWidth, BA_OriginY + [self getBarrageIndex] * labelHeight, size.width, labelHeight)];
             label.text = popMsg;
             label.font = [PUtility systemFontSize:18];
@@ -240,8 +243,10 @@
             } completion:^(BOOL finished) {
                 [label removeFromSuperview];
             }];
-            
+
+#if 0
         });
+#endif
     }
 }
 
@@ -252,14 +257,14 @@
 }
 
 - (NSInteger)getBarrageIndex {
-//    self.barrageIndex = (arc4random()%BA_LINENUM);
+//    self.barrageIndex = (arc4random() % BA_LINENUM);
     
-    self.barrageIndex ++; //按顺序排布弹幕显示
-    if (self.barrageIndex > BA_LINENUM) {
+    NSInteger i = self.barrageIndex++; //按顺序排布弹幕显示
+    if (self.barrageIndex >= BA_LINENUM) {
         self.barrageIndex = 0;
     }
     
-    return self.barrageIndex;
+    return i;
 }
 
 //根据label的内容换算弹幕的滚动时间
@@ -267,7 +272,7 @@
     
     NSInteger time = (arc4random()%2 + 10) + sqrt(label.text.length);
     
-    DLog(@"弹幕时间---time [%ld] length[%lu]", (long)time, (unsigned long)label.text.length);
+    DLog(@"弹幕时间---time [%ld] length[%lu] %@", (long)time, (unsigned long)label.text.length, label.text);
     
     return time; //随机产生5到15秒的弹幕动画时间
 }
